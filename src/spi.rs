@@ -1129,6 +1129,36 @@ where
         Ok(())
     }
 
+    pub async fn verify_spi_communications_long(&mut self) -> Result<(), ConfigError> {
+        let address = 0x400;
+
+        let mut dword_data = [0u32; 32];
+        for (i, d) in dword_data.iter_mut().enumerate() {
+            *d = 1 << i;
+        }
+
+        let mut data = [0u8; 32 * 4];
+        for i in 0..32 {
+            let bytes = dword_data[i].to_le_bytes();
+
+            data[i * 4] = bytes[0];
+            data[i * 4 + 1] = bytes[1];
+            data[i * 4 + 2] = bytes[2];
+            data[i * 4 + 3] = bytes[3];
+        }
+
+        self.write_ram(address, &data).await?;
+
+        let mut read_back_buf = [0u8; 32 * 4];
+        self.read_ram(address, &mut read_back_buf).await?;
+
+        if read_back_buf != data {
+            return Err(ConfigError::SPIFailedRAMEcho);
+        }
+
+        Ok(())
+    }
+
     /// Reads a contiguous range from RAM into the provided buffer
     pub async fn read_ram(&mut self, address: u16, data: &mut [u8]) -> Result<(), Error> {
         is_valid_ram_address(address as u32, data.len())
