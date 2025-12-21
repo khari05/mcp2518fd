@@ -293,6 +293,42 @@ pub struct Settings {
     pub enable_ecc_error_interrupt: bool,
 }
 
+impl Default for Settings {
+    fn default() -> Self {
+        Self {
+            // Standard for 40MHz XTAL
+            oscillator: OscillatorConfiguration::default(),
+            // Use default values for IOCON register
+            io_configuration: IoConfiguration::new(),
+            // Configure the bit timings (assumes a 40MHz input clock)
+            bit_time_configuration: BitTimeConfiguration::new(
+                NominalBitTimeConfiguration::RATE_500_KBIT,
+                DataBitTimeConfiguration::RATE_2_MBIT,
+            ),
+            // Store the last 12 transmitted messages in the TEF with timestamps
+            tx_event_fifo: Some(TxEventFifoConfiguration::new(12).with_timestamps(false)),
+            // Configure TXQ to have priority over all other FIFOs, and to
+            // hold up to 8 messages with a max payload size of 32 bytes
+            tx_queue: Some(TxQueueConfiguration::new(
+                crate::memory::controller::fifo::HIGHEST_FIFO_PRIORITY,
+                8,
+                PayloadSize::Bytes32,
+            )),
+            // Enable the Time Based Counter (required for timestamps to be
+            // recorded as non-zero)
+            enable_time_based_counter: true,
+            // Do not filter by any data bits
+            data_bits_to_match: None,
+            // Do not interrupt on CAN bus errors
+            enable_can_error_interrupts: false,
+            // Do not interrupt on SPI comms errors
+            enable_spi_error_interrupt: false,
+            // Do not interrupt on RAM ECC errors
+            enable_ecc_error_interrupt: false
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum FifoMode {
     Transmit(TxFifoConfiguration),

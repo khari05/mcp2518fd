@@ -4,10 +4,15 @@ A `#![no_std]` Rust driver library for interacting with [MCP2518FD](https://www.
 
 This driver attempts to improve on previous such crates and strives to expose as much functionality as possible while making it easy to use for the majority of common use cases.
 
+Forked from [adom-inc/mcp2518fd](https://github.com/adom-inc/mcp2518fd) at commit `47d4fa0` to require less complexity when programming the CAN controller/transciever on the Anything iN 1 RP2350 data acquisition board for Kennesaw Motorsports. AN1 has the SPI0 peripheral reserved for use with the onboard CAN transciever, making the bus sharing code added to the original library redundant for the team's use case.
+
+This project also implements `Default` for `crate::settings::Settings` to prefill default settings required for the MCP2518 on the AN1 board.
+
 ## Cargo Features
 
 All features are disabled by default.
 
+- `async` - Uses `embedded_hal_async::spi::SpiBus` for use with asynchronous projects
 - `defmt` - Implements `defmt::Format` for most public types so they can be printed using `defmt::info!()` and relatives
 
 ## Examples
