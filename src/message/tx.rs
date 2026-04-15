@@ -1,5 +1,5 @@
 use bitfield::bitfield;
-use embedded_can::{ExtendedId, Id, StandardId};
+use embedded_can::{ExtendedId, Frame, Id, StandardId};
 
 use super::{dlc_for_len, len_for_dlc, HEADER_SIZE_DWORDS, MAX_FD_BUFFER_SIZE};
 
@@ -39,6 +39,10 @@ impl TxMessage {
 
     pub fn new_2_0(identifier: impl Into<Id>, data: &[u8]) -> Option<Self> {
         Self::new_with_data(identifier.into(), data, false)
+    }
+
+    pub fn from_frame(frame: impl Frame) -> Option<Self> {
+        Self::new_2_0(frame.id(), frame.data())
     }
 
     fn new_with_data(identifier: Id, data: &[u8], is_fd: bool) -> Option<Self> {

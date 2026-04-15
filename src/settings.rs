@@ -299,10 +299,10 @@ impl Default for Settings {
             // Standard for 40MHz XTAL
             oscillator: OscillatorConfiguration::default(),
             // Use default values for IOCON register
-            io_configuration: IoConfiguration::new(),
+            io_configuration: IoConfiguration::default(),
             // Configure the bit timings (assumes a 40MHz input clock)
             bit_time_configuration: BitTimeConfiguration::new(
-                NominalBitTimeConfiguration::RATE_500_KBIT,
+                NominalBitTimeConfiguration::RATE_1_MBIT,
                 DataBitTimeConfiguration::RATE_2_MBIT,
             ),
             // Store the last 12 transmitted messages in the TEF with timestamps

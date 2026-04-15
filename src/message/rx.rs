@@ -1,5 +1,5 @@
 use bitfield::bitfield;
-use embedded_can::{ExtendedId, Id, StandardId};
+use embedded_can::{ExtendedId, Frame, Id, StandardId};
 
 use crate::memory::controller::filter::FilterNumber;
 
@@ -103,5 +103,35 @@ impl RxMessage {
     /// Determines from the header whether or not this message is a CAN FD frame
     pub fn is_fd(&self) -> bool {
         self.header.fdf()
+    }
+}
+
+impl Frame for RxMessage {
+    fn new(_id: impl Into<Id>, _data: &[u8]) -> Option<Self> {
+        todo!()
+    }
+
+    fn new_remote(_id: impl Into<Id>, _dlc: usize) -> Option<Self> {
+        todo!()
+    }
+
+    fn is_extended(&self) -> bool {
+        self.header.ide()
+    }
+
+    fn is_remote_frame(&self) -> bool {
+        self.header.rtr()
+    }
+
+    fn id(&self) -> Id {
+        self.id()
+    }
+
+    fn dlc(&self) -> usize {
+        len_for_dlc(self.header.dlc(), self.header.fdf()).unwrap()
+    }
+
+    fn data(&self) -> &[u8] {
+        self.data()
     }
 }
